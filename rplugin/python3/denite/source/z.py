@@ -12,6 +12,7 @@ class Source(Base):
 
         self.name = 'z'
         self.kind = 'directory'
+        self.default_action = 'cd'
         self.vars = {
             'order': 'frecent',
             'data': os.environ.get('_Z_DATA') or os.path.expanduser('~/.z')
