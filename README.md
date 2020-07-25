@@ -1,10 +1,11 @@
-# denite-z
+# denite-z neo/vim plugin
 
-Filter and browse [Z] (jump around) data file with this Denite source.
+> Filter and browse [z] / [z.lua] / [zoxide] (jump around) data file with
+> this [denite.nvim] plugin for Neovim or Vim.
 
 ## Features
 
-- Uses original python Z implementation
+- Detect and use [zoxide], or fallback to original [rupa/j2] implementation
 - Custom Denite sorter
 - Manual command option
 
@@ -14,24 +15,29 @@ Use your favorite plugin manager, mine is [dein.vim].
 
 ### Requirements
 
+- Python 3.4 or later
 - Vim or Neovim
 - [denite.nvim]
-- Python 3.4 or later
+- **One** of z's variants:
+    - [zoxide]
+    - [z.lua]
+    - [rupa/z]
 
 ## Usage
 
 ```viml
-:Denite z[:filter:order]
+:Denite z[:query[:order]]
 ```
 
-- _**filter**_ can be any string to filter candidates
-- _**order**_ must be one of: rank, recent, frecent
+- **query** can be any string to filter candidates
+- **order** must be one of: `rank`, `recent` (default), `frecent`
+  _(Doesn't work when zoxide is used)_
 
-Usage examples:
+Examples:
 
 - To list all entries: `:Denite z`
-- Filter down results: `:Denite z:acme`
-- To list all entries with rank order: `:Denite z::rank`
+- Query to filter results: `:Denite z:acme`
+- To list all entries with the _rank_ order: `:Denite z::rank`
 
 ### Configuration
 
@@ -57,14 +63,16 @@ command! -nargs=+ -complete=command Z
 ## Credits & Contribution
 
 - [rupa/z] - wonderful utility
-- [rupa/j2] - python version of z
+- [rupa/j2] - included python implementation of z
 
 This plugin is maintained by Rafael Bodill.
 
 Pull requests are welcome.
 
-[Z]: https://github.com/rupa/z
+[z]: https://github.com/rupa/z
 [rupa/z]: https://github.com/rupa/z
+[zoxide]: https://github.com/ajeetdsouza/zoxide
+[z.lua]: https://github.com/skywind3000/z.lua
 [rupa/j2]: https://github.com/rupa/j2
 [denite.nvim]: https://github.com/Shougo/denite.nvim
 [dein.vim]: https://github.com/Shougo/dein.vim

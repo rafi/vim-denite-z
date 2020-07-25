@@ -1,39 +1,69 @@
 import os
 import time
+import shutil
 
-from .base import Base
+from denite.base.source import Base
+from subprocess import CalledProcessError, run, PIPE
+from denite.util import Nvim, UserContext, Candidates
 
 
 class Source(Base):
     """ Z (jump around) source for Denite """
 
-    def __init__(self, vim):
+    def __init__(self, vim: Nvim) -> None:
         super().__init__(vim)
 
         self.name = 'z'
         self.kind = 'directory'
         self.default_action = 'cd'
+
         self.vars = {
             'order': 'frecent',
-            'data': os.environ.get('_Z_DATA') or os.path.expanduser('~/.z')
+            'encoding': 'utf-8',
+            'command': [],
+            'data': ''
         }
+        if shutil.which('zoxide'):
+            self.vars['command'] = ['zoxide', 'query', '-ls']
+        else:
+            self.vars['data'] = \
+                os.environ.get('_ZL_DATA') or os.environ.get('_Z_DATA') \
+                or os.path.expanduser('~/.z')
 
-    def on_init(self, context):
-        self.filters = []
+    def on_init(self, context: UserContext) -> None:
+        self.query = ''
         if len(context['args']) > 0:
-            self.filters = context['args'][0]
+            self.query = context['args'][0]
 
         if len(context['args']) > 1:
             self.vars['order'] = context['args'][1]
 
-    def gather_candidates(self, context):
-        j = J(self.vars['data'])
+    def gather_candidates(self, context: UserContext) -> Candidates:
+        if self.vars['command']:
+            try:
+                cmd = list(self.vars['command'])
+                if self.query:
+                    cmd.append(self.query.strip())
 
-        # Prefer case-sensitive matches first
-        if not j.matches(self.filters):
-            j.matches(self.filters, True)
+                p = run(cmd, check=True, stdout=PIPE, stderr=PIPE)
+                output = p.stdout.decode(self.vars['encoding'])
+                directories = []
+                for line in output.splitlines():
+                    directories.append(line.strip().split(' '))
+            except CalledProcessError as e:
+                err_msg = e.stderr.decode(self.vars['encoding']).splitlines()
+                self.error_message(context, err_msg)
+                return []
 
-        directories = j.pretty(self.vars['order'])
+        else:
+            j = J(self.vars['data'])
+
+            # Prefer case-sensitive matches first
+            query = self.query.strip().split(' ')
+            if not j.matches(query):
+                j.matches(query, True)
+
+            directories = j.pretty(self.vars['order'])
 
         return [
             {
