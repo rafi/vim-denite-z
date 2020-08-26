@@ -41,16 +41,10 @@ Examples:
 
 ### Configuration
 
-You can set the order option globally:
+Set the `z` source sorter to `sorter/z` for proper rank order:
 
 ```viml
-call denite#custom#var('z', 'order', 'frecent')
-```
-
-Sort candidates by Z ranking:
-
-```viml
-call denite#custom#source('z', 'sorters', ['sorter_z'])
+call denite#custom#source('z', 'sorters', ['sorter/z'])
 ```
 
 Create a short-cut command: (Usage: `:Z foo`)
@@ -59,6 +53,14 @@ Create a short-cut command: (Usage: `:Z foo`)
 command! -nargs=+ -complete=command Z
   \ call denite#start([{'name': 'z', 'args': [<q-args>]}])
 ```
+
+Unless you're using [zoxide], you can change the order option:
+
+```viml
+call denite#custom#var('z', 'order', 'frecent')
+```
+
+Possible options: `rank`, `recent`, and `frecent`.
 
 ## Credits & Contribution
 
