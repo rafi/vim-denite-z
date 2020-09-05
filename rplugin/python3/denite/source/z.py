@@ -1,3 +1,10 @@
+# ============================================================================
+# FILE: z.py
+# AUTHOR: Rafael Bodill <justrafi at gmail.com>
+# DESCRIPTION: Source for rupa/z, z.lua or zoxide history of directories
+# License: MIT license
+# ============================================================================
+
 import os
 import time
 import shutil
